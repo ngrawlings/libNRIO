@@ -1,0 +1,263 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		97B467461C9AFAC200DD2C30 /* Stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97B467411C9AFAC200DD2C30 /* Stream.cpp */; };
+		97B467471C9AFAC200DD2C30 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 97B467421C9AFAC200DD2C30 /* Stream.h */; };
+		97B467481C9AFAC200DD2C30 /* StringStreamReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97B467431C9AFAC200DD2C30 /* StringStreamReader.cpp */; };
+		97B467491C9AFAC200DD2C30 /* StringStreamReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 97B467441C9AFAC200DD2C30 /* StringStreamReader.h */; };
+		97B4674A1C9AFAC200DD2C30 /* TextStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 97B467451C9AFAC200DD2C30 /* TextStream.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		97B467391C9AFA9B00DD2C30 /* libNrIO.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNrIO.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		97B467411C9AFAC200DD2C30 /* Stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Stream.cpp; path = nrio/Stream.cpp; sourceTree = "<group>"; };
+		97B467421C9AFAC200DD2C30 /* Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Stream.h; path = nrio/Stream.h; sourceTree = "<group>"; };
+		97B467431C9AFAC200DD2C30 /* StringStreamReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringStreamReader.cpp; path = nrio/StringStreamReader.cpp; sourceTree = "<group>"; };
+		97B467441C9AFAC200DD2C30 /* StringStreamReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringStreamReader.h; path = nrio/StringStreamReader.h; sourceTree = "<group>"; };
+		97B467451C9AFAC200DD2C30 /* TextStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextStream.h; path = nrio/TextStream.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		97B467361C9AFA9B00DD2C30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		97B467301C9AFA9B00DD2C30 = {
+			isa = PBXGroup;
+			children = (
+				97B467401C9AFAB500DD2C30 /* nrio */,
+				97B4673A1C9AFA9B00DD2C30 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		97B4673A1C9AFA9B00DD2C30 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				97B467391C9AFA9B00DD2C30 /* libNrIO.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		97B467401C9AFAB500DD2C30 /* nrio */ = {
+			isa = PBXGroup;
+			children = (
+				97B467411C9AFAC200DD2C30 /* Stream.cpp */,
+				97B467421C9AFAC200DD2C30 /* Stream.h */,
+				97B467431C9AFAC200DD2C30 /* StringStreamReader.cpp */,
+				97B467441C9AFAC200DD2C30 /* StringStreamReader.h */,
+				97B467451C9AFAC200DD2C30 /* TextStream.h */,
+			);
+			name = nrio;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		97B467371C9AFA9B00DD2C30 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				97B467491C9AFAC200DD2C30 /* StringStreamReader.h in Headers */,
+				97B467471C9AFAC200DD2C30 /* Stream.h in Headers */,
+				97B4674A1C9AFAC200DD2C30 /* TextStream.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		97B467381C9AFA9B00DD2C30 /* NrIO */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 97B4673D1C9AFA9B00DD2C30 /* Build configuration list for PBXNativeTarget "NrIO" */;
+			buildPhases = (
+				97B467351C9AFA9B00DD2C30 /* Sources */,
+				97B467361C9AFA9B00DD2C30 /* Frameworks */,
+				97B467371C9AFA9B00DD2C30 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NrIO;
+			productName = NrIO;
+			productReference = 97B467391C9AFA9B00DD2C30 /* libNrIO.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		97B467311C9AFA9B00DD2C30 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Liquidsoft Studio";
+				TargetAttributes = {
+					97B467381C9AFA9B00DD2C30 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = 97B467341C9AFA9B00DD2C30 /* Build configuration list for PBXProject "libNrIO" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 97B467301C9AFA9B00DD2C30;
+			productRefGroup = 97B4673A1C9AFA9B00DD2C30 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				97B467381C9AFA9B00DD2C30 /* NrIO */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		97B467351C9AFA9B00DD2C30 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				97B467461C9AFAC200DD2C30 /* Stream.cpp in Sources */,
+				97B467481C9AFAC200DD2C30 /* StringStreamReader.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		97B4673B1C9AFA9B00DD2C30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		97B4673C1C9AFA9B00DD2C30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		97B4673E1C9AFA9B00DD2C30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		97B4673F1C9AFA9B00DD2C30 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		97B467341C9AFA9B00DD2C30 /* Build configuration list for PBXProject "libNrIO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97B4673B1C9AFA9B00DD2C30 /* Debug */,
+				97B4673C1C9AFA9B00DD2C30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		97B4673D1C9AFA9B00DD2C30 /* Build configuration list for PBXNativeTarget "NrIO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97B4673E1C9AFA9B00DD2C30 /* Debug */,
+				97B4673F1C9AFA9B00DD2C30 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 97B467311C9AFA9B00DD2C30 /* Project object */;
+}
