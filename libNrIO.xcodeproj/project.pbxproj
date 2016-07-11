@@ -224,6 +224,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../libNRCore\"",
+					"\"$(SRCROOT)/../libNrThreads\"",
+					"\"$(SRCROOT)/\"",
+					"\"$(SRCROOT)/../libNrDebug\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -232,6 +238,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../libNRCore\"",
+					"\"$(SRCROOT)/../libNrThreads\"",
+					"\"$(SRCROOT)/\"",
+					"\"$(SRCROOT)/../libNrDebug\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

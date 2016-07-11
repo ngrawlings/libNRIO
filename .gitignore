@@ -1,1 +1,6 @@
 .DS_Store
+config.log
+config.status
+*.o
+build/libnrio.a
+autom4te.cache

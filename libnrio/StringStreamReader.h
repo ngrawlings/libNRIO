@@ -1,8 +1,8 @@
 //
-//  Stream.cpp
+//  StreamReader.h
 //  libNRCore
 //
-//  Created by Nyhl Rawlings on 19/05/2013.
+//  Created by Nyhl Rawlings on 22/05/2013.
 //  Copyright (c) 2013. All rights reserved.
 //
 // This library is free software; you can redistribute it and/or
@@ -22,48 +22,36 @@
 // For affordable commercial licensing please contact nyhl@ngrawlings.com
 //
 
-#include "Stream.h"
-#include <libnrcore/debug/Log.h>
-#include <fcntl.h>
-#include <errno.h>
+#ifndef __PeerConnectorCore__StreamReader__
+#define __PeerConnectorCore__StreamReader__
+
+#include <libnrthreads/Task.h>
+#include <libnrthreads/Thread.h>
+#include <libnrio/Stream.h>
 
 namespace nrcore {
 
-    Stream::Stream(int fd) {
-        this->fd = fd;
-    }
-
-    Stream::~Stream() {
-        if (fd)
-            close();
-    }
-
-    void Stream::close() {
-        ::close(fd);
-    }
-
-    int Stream::getFd() {
-        return fd;
-    }
-
-    bool Stream::isValid() {
-        return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
-    }
-
-    ssize_t Stream::write(const char* buf, size_t sz) {
-        if (fd<0)
-            return 0;
+    class StringStreamReader : public Task {
+    public:
+        StringStreamReader(Stream *stream);
+        virtual ~StringStreamReader();
         
-        ssize_t ret = ::write(fd, buf, sz);
-        fsync(fd);
-        return ret;
-    }
-
-    ssize_t Stream::read(char* buf, size_t sz) {
-        if (fd < 0)
-            return 0;
+        void runBlockingMode();
         
-        return ::read(fd, buf, sz);
-    }
-
+        void close();
+        
+    protected:
+        void run();
+        virtual void onLineRead(const char* line) = 0;
+        
+    private:
+        bool _run;
+        
+        Stream *stream;
+        
+        Thread *thread;
+    };
+    
 };
+
+#endif /* defined(__PeerConnectorCore__StreamReader__) */

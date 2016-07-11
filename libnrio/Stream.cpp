@@ -1,8 +1,8 @@
 //
-//  StreamReader.h
+//  Stream.cpp
 //  libNRCore
 //
-//  Created by Nyhl Rawlings on 22/05/2013.
+//  Created by Nyhl Rawlings on 19/05/2013.
 //  Copyright (c) 2013. All rights reserved.
 //
 // This library is free software; you can redistribute it and/or
@@ -22,37 +22,48 @@
 // For affordable commercial licensing please contact nyhl@ngrawlings.com
 //
 
-#ifndef __PeerConnectorCore__StreamReader__
-#define __PeerConnectorCore__StreamReader__
-
-#include <libnrcore/base/Object.h>
-#include <libnrcore/threading/Task.h>
-#include <libnrcore/threading/Thread.h>
-#include <libnrcore/io/Stream.h>
+#include "Stream.h"
+#include <libnrdebug/Log.h>
+#include <fcntl.h>
+#include <errno.h>
 
 namespace nrcore {
 
-    class StringStreamReader : public Task {
-    public:
-        StringStreamReader(Stream *stream);
-        virtual ~StringStreamReader();
-        
-        void runBlockingMode();
-        
-        void close();
-        
-    protected:
-        void run();
-        virtual void onLineRead(const char* line) = 0;
-        
-    private:
-        bool _run;
-        
-        Stream *stream;
-        
-        Thread *thread;
-    };
-    
-};
+    Stream::Stream(int fd) {
+        this->fd = fd;
+    }
 
-#endif /* defined(__PeerConnectorCore__StreamReader__) */
+    Stream::~Stream() {
+        if (fd)
+            close();
+    }
+
+    void Stream::close() {
+        ::close(fd);
+    }
+
+    int Stream::getFd() {
+        return fd;
+    }
+
+    bool Stream::isValid() {
+        return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
+    }
+
+    ssize_t Stream::write(const char* buf, size_t sz) {
+        if (fd<0)
+            return 0;
+        
+        ssize_t ret = ::write(fd, buf, sz);
+        fsync(fd);
+        return ret;
+    }
+
+    ssize_t Stream::read(char* buf, size_t sz) {
+        if (fd < 0)
+            return 0;
+        
+        return ::read(fd, buf, sz);
+    }
+
+};
