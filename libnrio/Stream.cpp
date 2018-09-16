@@ -32,6 +32,10 @@ namespace nrcore {
     Stream::Stream(int fd) {
         this->fd = fd;
     }
+    
+    Stream::Stream(const Stream& stream) {
+        this->fd = stream.fd;
+    }
 
     Stream::~Stream() {
         if (fd)
@@ -50,7 +54,7 @@ namespace nrcore {
         return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
     }
 
-    ssize_t Stream::write(const char* buf, size_t sz) {
+    size_t Stream::write(const char* buf, size_t sz) {
         if (fd<0)
             return 0;
         
@@ -59,7 +63,7 @@ namespace nrcore {
         return ret;
     }
 
-    ssize_t Stream::read(char* buf, size_t sz) {
+    size_t Stream::read(char* buf, size_t sz) {
         if (fd < 0)
             return 0;
         

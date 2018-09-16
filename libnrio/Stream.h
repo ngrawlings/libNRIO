@@ -32,10 +32,11 @@ namespace nrcore {
     class Stream {
     public:
         Stream(int fd);
+        Stream(const Stream& stream);
         virtual ~Stream();
         
-        virtual ssize_t write(const char* buf, size_t sz);
-        virtual ssize_t read(char* buf, size_t sz);
+        virtual size_t write(const char* buf, size_t sz);
+        virtual size_t read(char* buf, size_t sz);
         virtual void close();
         
         int getFd();

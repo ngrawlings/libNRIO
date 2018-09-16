@@ -22,15 +22,16 @@ namespace nrcore {
     public:
         FileStream(int fd);
         FileStream(String filename);
+        FileStream(const FileStream& fs);
         virtual ~FileStream();
         
         void seek(off_t position);
+        off_t position();
         
-        ssize_t write(const char* buf, size_t sz);
-        ssize_t read(char* buf, size_t sz);
+        size_t write(const char* buf, size_t sz);
+        size_t read(char* buf, size_t sz);
         
-    protected:
-        off_t position;
+        off_t getfileSize();
         
     };
     

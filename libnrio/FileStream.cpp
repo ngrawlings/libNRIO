@@ -22,24 +22,34 @@ namespace nrcore {
         fd = fileno(pFile);
     }
     
+    FileStream::FileStream(const FileStream& fs) : Stream(fs) {
+    }
+    
     FileStream::~FileStream() {
         
     }
     
     void FileStream::seek(off_t position) {
-        this->position = lseek(fd, position, SEEK_SET);
+        lseek(fd, position, SEEK_SET);
     }
     
-    ssize_t FileStream::write(const char* buf, size_t sz) {
-        ssize_t ret = Stream::write(buf, sz);
-        this->position += ret;
-        return ret;
+    off_t FileStream::position() {
+        return lseek(fd, 0, SEEK_CUR);
     }
     
-    ssize_t FileStream::read(char* buf, size_t sz) {
-        ssize_t ret = Stream::read(buf, sz);
-        this->position += ret;
-        return ret;
+    size_t FileStream::write(const char* buf, size_t sz) {
+        return Stream::write(buf, sz);
+    }
+    
+    size_t FileStream::read(char* buf, size_t sz) {
+        return Stream::read(buf, sz);
+    }
+    
+    off_t FileStream::getfileSize() {
+        off_t position = lseek(fd, 0, SEEK_CUR);
+        off_t end = lseek(fd, 0, SEEK_END);
+        lseek(fd, position, SEEK_SET);
+        return end;
     }
     
 }
