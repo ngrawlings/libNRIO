@@ -26,13 +26,19 @@ namespace nrcore {
         virtual ~FileStream();
         
         void seek(off_t position);
+        void seekEOF();
         off_t position();
         
-        size_t write(const char* buf, size_t sz);
-        size_t read(char* buf, size_t sz);
+        ssize_t write(const char* buf, size_t sz);
+        ssize_t read(char* buf, size_t sz);
         
         off_t getfileSize();
         
+        void flush();
+        void close();
+        
+    protected:
+        FILE* file;
     };
     
 }

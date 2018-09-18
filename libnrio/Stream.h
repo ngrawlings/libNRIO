@@ -35,8 +35,8 @@ namespace nrcore {
         Stream(const Stream& stream);
         virtual ~Stream();
         
-        virtual size_t write(const char* buf, size_t sz);
-        virtual size_t read(char* buf, size_t sz);
+        virtual ssize_t write(const char* buf, size_t sz);
+        virtual ssize_t read(char* buf, size_t sz);
         virtual void close();
         
         int getFd();

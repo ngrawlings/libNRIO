@@ -12,20 +12,25 @@
 using namespace nrcore;
 
 int main(int argc, const char * argv[]) {
-    FileStream fs(String("test.dat"));
+    FileStream fs(String("./test.dat"));
     
+    fs.seek(0);
     char buf[11];
     buf[10] = 0;
-    fs.write("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 100);
+    int ret = fs.write("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 100);
+    fs.flush();
     fs.seek(55);
     
     fs.read(buf, 10);
     
     fs.seek(55);
     fs.write("AAAAA", 5);
+    fs.flush();
     
     fs.seek(55);
     fs.read(buf, 10);
+    
+    off_t sz = fs.getfileSize();
     
     fs.close();
     

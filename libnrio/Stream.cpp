@@ -54,7 +54,7 @@ namespace nrcore {
         return fcntl(fd, F_GETFL) != -1 || errno != EBADF;
     }
 
-    size_t Stream::write(const char* buf, size_t sz) {
+    ssize_t Stream::write(const char* buf, size_t sz) {
         if (fd<0)
             return 0;
         
@@ -63,7 +63,7 @@ namespace nrcore {
         return ret;
     }
 
-    size_t Stream::read(char* buf, size_t sz) {
+    ssize_t Stream::read(char* buf, size_t sz) {
         if (fd < 0)
             return 0;
         
