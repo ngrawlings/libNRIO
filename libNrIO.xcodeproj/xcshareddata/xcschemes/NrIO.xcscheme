@@ -11,12 +11,11 @@
             buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
-            buildForAnalyzing = "YES"
-            hideIssues = "NO">
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "97B467381C9AFA9B00DD2C30"
-               BuildableName = "libNrIO.a"
+               BuildableName = "libnrio.a"
                BlueprintName = "NrIO"
                ReferencedContainer = "container:libNrIO.xcodeproj">
             </BuildableReference>
@@ -47,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "97B467381C9AFA9B00DD2C30"
-            BuildableName = "libNrIO.a"
+            BuildableName = "libnrio.a"
             BlueprintName = "NrIO"
             ReferencedContainer = "container:libNrIO.xcodeproj">
          </BuildableReference>
@@ -65,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "97B467381C9AFA9B00DD2C30"
-            BuildableName = "libNrIO.a"
+            BuildableName = "libnrio.a"
             BlueprintName = "NrIO"
             ReferencedContainer = "container:libNrIO.xcodeproj">
          </BuildableReference>

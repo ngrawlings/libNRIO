@@ -16,7 +16,7 @@
 		97F130C22146A1B5002E9AFD /* FileStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 97F130C02146A1B5002E9AFD /* FileStream.h */; };
 		97F130CA2146AB7E002E9AFD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97F130C92146AB7E002E9AFD /* main.cpp */; };
 		97F130D02146B18A002E9AFD /* libnrcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97F130CF2146B18A002E9AFD /* libnrcore.a */; };
-		97F130D12146B18D002E9AFD /* libNrIO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97B467391C9AFA9B00DD2C30 /* libNrIO.a */; };
+		97F130D12146B18D002E9AFD /* libnrio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97B467391C9AFA9B00DD2C30 /* libnrio.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,7 +32,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		97B467391C9AFA9B00DD2C30 /* libNrIO.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNrIO.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		97B467391C9AFA9B00DD2C30 /* libnrio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnrio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		97B467411C9AFAC200DD2C30 /* Stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stream.cpp; sourceTree = "<group>"; };
 		97B467421C9AFAC200DD2C30 /* Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stream.h; sourceTree = "<group>"; };
 		97B467431C9AFAC200DD2C30 /* StringStreamReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringStreamReader.cpp; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				97F130D02146B18A002E9AFD /* libnrcore.a in Frameworks */,
-				97F130D12146B18D002E9AFD /* libNrIO.a in Frameworks */,
+				97F130D12146B18D002E9AFD /* libnrio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,7 +78,7 @@
 		97B4673A1C9AFA9B00DD2C30 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				97B467391C9AFA9B00DD2C30 /* libNrIO.a */,
+				97B467391C9AFA9B00DD2C30 /* libnrio.a */,
 				97F130C72146AB7E002E9AFD /* UnitTests */,
 			);
 			name = Products;
@@ -145,7 +145,7 @@
 			);
 			name = NrIO;
 			productName = NrIO;
-			productReference = 97B467391C9AFA9B00DD2C30 /* libNrIO.a */;
+			productReference = 97B467391C9AFA9B00DD2C30 /* libnrio.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		97F130C62146AB7E002E9AFD /* UnitTests */ = {
@@ -189,6 +189,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 97B467301C9AFA9B00DD2C30;
@@ -315,7 +316,8 @@
 					"\"$(SRCROOT)/\"",
 					"\"$(SRCROOT)/../libNrDebug\"",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = nrio;
+				PRODUCT_NAME = nrio;
 			};
 			name = Debug;
 		};
@@ -329,7 +331,8 @@
 					"\"$(SRCROOT)/\"",
 					"\"$(SRCROOT)/../libNrDebug\"",
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = nrio;
+				PRODUCT_NAME = nrio;
 			};
 			name = Release;
 		};
