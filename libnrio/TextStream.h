@@ -39,6 +39,22 @@ namespace nrcore {
  
        	}
         
+        bool writeLine(String line) {
+            line += "\n";
+            ssize_t written;
+            ssize_t len = line.length();
+            
+            while (len>0) {
+                written = write(line.operator char*(), len);
+                if (written <= 0)
+                    return false;
+                
+                len -= written;
+            }
+            
+            return true;
+        }
+        
         String readLine() {
             char tmp[32];
             int pos = buffer.indexOf("\n");
@@ -50,8 +66,11 @@ namespace nrcore {
                 } while (pos == -1);
             }
             
-            String ret = buffer.substr(0, pos);
-            buffer = buffer.substr(pos);
+            String ret;
+            if (pos)
+                ret = buffer.substr(0, pos);
+            
+            buffer = buffer.substr(pos+1);
             
             return ret;
        	}
