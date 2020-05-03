@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		975A65D523CF307000B7AC2F /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 975A65D323CF307000B7AC2F /* File.cpp */; };
+		975A65D623CF307000B7AC2F /* File.h in Headers */ = {isa = PBXBuildFile; fileRef = 975A65D423CF307000B7AC2F /* File.h */; };
 		97B467461C9AFAC200DD2C30 /* Stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97B467411C9AFAC200DD2C30 /* Stream.cpp */; };
 		97B467471C9AFAC200DD2C30 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 97B467421C9AFAC200DD2C30 /* Stream.h */; };
 		97B467481C9AFAC200DD2C30 /* StringStreamReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97B467431C9AFAC200DD2C30 /* StringStreamReader.cpp */; };
@@ -32,6 +34,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		975A65D323CF307000B7AC2F /* File.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = File.cpp; sourceTree = "<group>"; };
+		975A65D423CF307000B7AC2F /* File.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		97B467391C9AFA9B00DD2C30 /* libnrio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnrio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		97B467411C9AFAC200DD2C30 /* Stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stream.cpp; sourceTree = "<group>"; };
 		97B467421C9AFAC200DD2C30 /* Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stream.h; sourceTree = "<group>"; };
@@ -87,6 +91,8 @@
 		97B467401C9AFAB500DD2C30 /* libnrio */ = {
 			isa = PBXGroup;
 			children = (
+				975A65D423CF307000B7AC2F /* File.h */,
+				975A65D323CF307000B7AC2F /* File.cpp */,
 				97B467411C9AFAC200DD2C30 /* Stream.cpp */,
 				97B467421C9AFAC200DD2C30 /* Stream.h */,
 				97B467431C9AFAC200DD2C30 /* StringStreamReader.cpp */,
@@ -125,6 +131,7 @@
 				97B467491C9AFAC200DD2C30 /* StringStreamReader.h in Headers */,
 				97B467471C9AFAC200DD2C30 /* Stream.h in Headers */,
 				97B4674A1C9AFAC200DD2C30 /* TextStream.h in Headers */,
+				975A65D623CF307000B7AC2F /* File.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,7 +178,7 @@
 		97B467311C9AFA9B00DD2C30 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Liquidsoft Studio";
 				TargetAttributes = {
 					97B467381C9AFA9B00DD2C30 = {
@@ -209,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				97B467461C9AFAC200DD2C30 /* Stream.cpp in Sources */,
+				975A65D523CF307000B7AC2F /* File.cpp in Sources */,
 				97F130C12146A1B5002E9AFD /* FileStream.cpp in Sources */,
 				97B467481C9AFAC200DD2C30 /* StringStreamReader.cpp in Sources */,
 			);
@@ -379,12 +387,16 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4MASABRRSM;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				HEADER_SEARCH_PATHS = (
 					./,
 					/usr/local/include,
 				);
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					"\"$(SRCROOT)/../LibNrCore/Debug/\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -411,12 +423,16 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4MASABRRSM;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				HEADER_SEARCH_PATHS = (
 					./,
 					/usr/local/include,
 				);
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					"\"$(SRCROOT)/../LibNrCore/Debug/\"",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
