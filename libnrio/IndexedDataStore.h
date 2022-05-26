@@ -41,6 +41,7 @@ namespace nrcore {
             unsigned long long first_data_block;
             unsigned long long last_data_block;
             unsigned long long file_size;
+            unsigned int block_size;
         } FILE_DESCRIPTOR;
         
         typedef struct {
@@ -65,9 +66,7 @@ namespace nrcore {
         IndexedDataStore(String path);
         virtual ~IndexedDataStore();
         
-        void setBlockSize(unsigned int block_size);
-        
-        Ref<LOADED_FILE_DESCRIPTOR> createFile(Memory key);
+        Ref<LOADED_FILE_DESCRIPTOR> createFile(Memory key, unsigned int block_size);
         Ref<LOADED_FILE_DESCRIPTOR> getFile(Memory key);
         
         bool writeToFile(Ref<LOADED_FILE_DESCRIPTOR> file, Memory data, unsigned long long offset, unsigned long long length);
@@ -76,7 +75,6 @@ namespace nrcore {
         
     private:
         File file;
-        unsigned int block_size;
         
         Ref<LOADED_INDEX_DESCRIPTOR> getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, int index);
         Ref<LOADED_INDEX_DESCRIPTOR> loadIndexDescriptor(unsigned long long offset);

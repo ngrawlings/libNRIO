@@ -16,16 +16,14 @@ using namespace nrcore;
 int main(int argc, const char * argv[]) {
     IndexedDataStore *data = new IndexedDataStore("./index_data_Store_test.dat");
     
-    data->setBlockSize(32);
-    
     Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> file1 = data->getFile(Memory(ByteArray::fromHex("0102"), 2));
     Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> file2 = data->getFile(Memory(ByteArray::fromHex("010203"), 3));
     
     if (!file1.getPtr())
-        file1 = data->createFile(Memory(ByteArray::fromHex("0102"), 2));
+        file1 = data->createFile(Memory(ByteArray::fromHex("0102"), 2), 32);
     
     if (!file2.getPtr())
-        file2 = data->createFile(Memory(ByteArray::fromHex("010203"), 3));
+        file2 = data->createFile(Memory(ByteArray::fromHex("010203"), 3), 32);
         
     data->writeToFile(file1, Memory(ByteArray::fromHex("000102030405060708090A0B0C0D0E0F"), 16), 0, 16);
     data->writeToFile(file1, Memory(ByteArray::fromHex("000102030405060708090A0B0C0D0E0F"), 16), 16, 16);

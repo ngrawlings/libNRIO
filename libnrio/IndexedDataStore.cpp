@@ -12,7 +12,7 @@
 
 namespace nrcore {
 
-    IndexedDataStore::IndexedDataStore(String path) : file(path), block_size(4096) {
+    IndexedDataStore::IndexedDataStore(String path) : file(path) {
         if (file.length()==0) {
             INDEX_DESCRIPTOR root_descriptor;
             INDEX_DESCRIPTOR system_descriptor;
@@ -43,11 +43,7 @@ namespace nrcore {
         
     }
 
-    void IndexedDataStore::setBlockSize(unsigned int block_size) {
-        this->block_size = block_size;
-    }
-
-    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> IndexedDataStore::createFile(Memory key) {
+    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> IndexedDataStore::createFile(Memory key, unsigned int block_size) {
         Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> desc = getUserDecriptor();
         
         for (int i=0; i<key.length(); i++) {
@@ -62,6 +58,7 @@ namespace nrcore {
         FILE_DESCRIPTOR file_desc;
         memset(&file_desc, 0, sizeof(FILE_DESCRIPTOR));
         file_desc.magic_flag = MAGIC_FLAG_FILE;
+        file_desc.block_size = block_size;
         unsigned long long offset = file.length();
         file.write(offset, (const char*)&file_desc, sizeof(FILE_DESCRIPTOR));
         
@@ -96,16 +93,16 @@ namespace nrcore {
             DATA_BLOCK_DESCRIPTOR desc;
             memset(&desc, 0, sizeof(DATA_BLOCK_DESCRIPTOR));
             desc.magic_flag = MAGIC_FLAG_DATA;
-            desc.block_size = block_size;
+            desc.block_size = file.getPtr()->descriptor.block_size;
             
             unsigned long long file_offset = this->file.length();
             this->file.write(file_offset, (const char*)&desc, sizeof(DATA_BLOCK_DESCRIPTOR));
             
-            Memory mem(block_size);
-            for (int i=0; i<block_size; i++) {
+            Memory mem(file.getPtr()->descriptor.block_size);
+            for (int i=0; i<file.getPtr()->descriptor.block_size; i++) {
                 mem.getPtr()[i] = 0;
             }
-            this->file.write(file_offset+sizeof(DATA_BLOCK_DESCRIPTOR), mem.operator char *(), block_size);
+            this->file.write(file_offset+sizeof(DATA_BLOCK_DESCRIPTOR), mem.operator char *(), file.getPtr()->descriptor.block_size);
             
             file.getPtr()->descriptor.first_data_block = file_offset;
             //updateFileDescriptor(file); // Seems to be overwritten past the point of its end
@@ -122,8 +119,8 @@ namespace nrcore {
                 desc = loadDataDescriptor(desc.getPtr()->descriptor.next_data_block);
                 block_offset += desc.getPtr()->descriptor.block_size;
             } else {
-                desc = createDataBlock(desc, block_size);
-                block_offset += block_size;
+                desc = createDataBlock(desc, file.getPtr()->descriptor.block_size);
+                block_offset += file.getPtr()->descriptor.block_size;
             }
         }
             
@@ -156,7 +153,7 @@ namespace nrcore {
                 if (desc.getPtr()->descriptor.next_data_block) {
                     desc = loadDataDescriptor(desc.getPtr()->descriptor.next_data_block);
                 } else {
-                    desc = createDataBlock(desc, block_size);
+                    desc = createDataBlock(desc, file.getPtr()->descriptor.block_size);
                 }
             }
             cursor = 0;
