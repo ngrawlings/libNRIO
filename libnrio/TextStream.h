@@ -61,13 +61,16 @@ namespace nrcore {
             if (pos == -1) {
                 do {
                     size_t len = read(tmp, 32);
+                    if (!len)
+                        break;
+                    
                     buffer += String(tmp, len);
                     pos = buffer.indexOf("\n");
                 } while (pos == -1);
             }
             
             String ret;
-            if (pos)
+            if (pos>0)
                 ret = buffer.substr(0, pos);
             
             buffer = buffer.substr(pos+1);

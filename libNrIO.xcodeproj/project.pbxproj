@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		97329C3B283BE9E900A03D82 /* IndexedDataStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97329C39283BE9E900A03D82 /* IndexedDataStore.cpp */; };
+		97329C3C283BE9E900A03D82 /* IndexedDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 97329C3A283BE9E900A03D82 /* IndexedDataStore.h */; };
 		975A65D523CF307000B7AC2F /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 975A65D323CF307000B7AC2F /* File.cpp */; };
 		975A65D623CF307000B7AC2F /* File.h in Headers */ = {isa = PBXBuildFile; fileRef = 975A65D423CF307000B7AC2F /* File.h */; };
 		97B467461C9AFAC200DD2C30 /* Stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97B467411C9AFAC200DD2C30 /* Stream.cpp */; };
@@ -34,6 +36,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		97329C39283BE9E900A03D82 /* IndexedDataStore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IndexedDataStore.cpp; sourceTree = "<group>"; };
+		97329C3A283BE9E900A03D82 /* IndexedDataStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IndexedDataStore.h; sourceTree = "<group>"; };
 		975A65D323CF307000B7AC2F /* File.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = File.cpp; sourceTree = "<group>"; };
 		975A65D423CF307000B7AC2F /* File.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		97B467391C9AFA9B00DD2C30 /* libnrio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnrio.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +104,8 @@
 				97B467451C9AFAC200DD2C30 /* TextStream.h */,
 				97F130C02146A1B5002E9AFD /* FileStream.h */,
 				97F130BF2146A1B5002E9AFD /* FileStream.cpp */,
+				97329C3A283BE9E900A03D82 /* IndexedDataStore.h */,
+				97329C39283BE9E900A03D82 /* IndexedDataStore.cpp */,
 			);
 			path = libnrio;
 			sourceTree = "<group>";
@@ -132,6 +138,7 @@
 				97B467471C9AFAC200DD2C30 /* Stream.h in Headers */,
 				97B4674A1C9AFAC200DD2C30 /* TextStream.h in Headers */,
 				975A65D623CF307000B7AC2F /* File.h in Headers */,
+				97329C3C283BE9E900A03D82 /* IndexedDataStore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				97B467461C9AFAC200DD2C30 /* Stream.cpp in Sources */,
+				97329C3B283BE9E900A03D82 /* IndexedDataStore.cpp in Sources */,
 				975A65D523CF307000B7AC2F /* File.cpp in Sources */,
 				97F130C12146A1B5002E9AFD /* FileStream.cpp in Sources */,
 				97B467481C9AFAC200DD2C30 /* StringStreamReader.cpp in Sources */,

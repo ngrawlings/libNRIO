@@ -45,6 +45,8 @@ namespace nrcore {
         
         bool update_file;
         
+        void updateFileSize();
+        
         void updateFile();
         void writeToFile(size_t offset, const char* data, size_t length);
     };

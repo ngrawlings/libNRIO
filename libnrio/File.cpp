@@ -10,7 +10,7 @@
 
 namespace nrcore {
 
-File::File(const char *path) : Memory(FILE_BUFFER_SIZE), fill(0), offset(0), update_file(false)  {
+    File::File(const char *path) : Memory(FILE_BUFFER_SIZE), fill(0), offset(0), update_file(false)  {
         this->path = path;
         
         fp = fopen(path, "r+");
@@ -20,9 +20,7 @@ File::File(const char *path) : Memory(FILE_BUFFER_SIZE), fill(0), offset(0), upd
                 throw "Failed to open";
         }
         
-        fseek(fp, 0L, SEEK_END);
-        sz = ftell(fp);
-        fseek(fp, 0L, SEEK_SET);
+        updateFileSize();
         
         fill = fread(buffer.getPtr(), 1, FILE_BUFFER_SIZE, fp);
     }
@@ -100,22 +98,23 @@ File::File(const char *path) : Memory(FILE_BUFFER_SIZE), fill(0), offset(0), upd
                 }
             }
             
-            if (length)
+            if (length) {
                 writeToFile(offset, data, length);
+                updateFileSize();
+            }
             
-        } else
+        } else {
             writeToFile(offset, data, length);
+            updateFileSize();
+        }
     }
 
     Memory File::read(size_t offset, size_t length) const {
         Memory buffer(length);
         
         fseek(fp, offset, SEEK_SET);
-        size_t fill = fread(buffer.getPtr(), 1, FILE_BUFFER_SIZE, fp);
+        size_t fill = fread(buffer.getPtr(), 1, length, fp);
         fseek(fp, this->offset, SEEK_SET);
-        
-        if (fill == length)
-            return buffer;
         
         return Memory(buffer.operator char *(), fill);
     }
@@ -147,6 +146,12 @@ File::File(const char *path) : Memory(FILE_BUFFER_SIZE), fill(0), offset(0), upd
     
     int File::fileno() {
         return ::fileno(fp);
+    }
+
+    void File::updateFileSize() {
+        fseek(fp, 0L, SEEK_END);
+        sz = ftell(fp);
+        fseek(fp, 0L, SEEK_SET);
     }
     
     void File::updateFile(){
