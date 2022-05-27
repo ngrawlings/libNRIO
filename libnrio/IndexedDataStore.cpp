@@ -47,7 +47,7 @@ namespace nrcore {
         Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> desc = getUserDecriptor();
         
         for (int i=0; i<key.length(); i++) {
-            desc = getChildDescriptor(desc, key.getPtr()[i]);
+            desc = getChildDescriptor(desc, key.getPtr()[i], true);
             if (!desc.getPtr())
                 throw "Failed to get file key";
         }
@@ -72,7 +72,7 @@ namespace nrcore {
         Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> desc = getUserDecriptor();
         
         for (int i=0; i<key.length(); i++) {
-            desc = getChildDescriptor(desc, key.getPtr()[i]);
+            desc = getChildDescriptor(desc, key.getPtr()[i], false);
             if (!desc.getPtr())
                 throw "Failed to get file key";
         }
@@ -81,6 +81,18 @@ namespace nrcore {
             return loadFileDescriptor(desc.getPtr()->descriptor.file);
         
         return Ref<LOADED_FILE_DESCRIPTOR>();
+    }
+
+    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> IndexedDataStore::getOrCreateFile(Memory key, unsigned int block_size) {
+        Ref<LOADED_FILE_DESCRIPTOR> file;
+        try {
+            file = getFile(key);
+        } catch (...) {
+            if (!file.getPtr())
+                file = createFile(key, block_size);
+        }
+        
+        return file;
     }
 
     bool IndexedDataStore::writeToFile(Ref<LOADED_FILE_DESCRIPTOR> file, Memory data, unsigned long long offset, unsigned long long length) {
@@ -175,7 +187,7 @@ namespace nrcore {
         ByteArray ret;
         
         unsigned long long file_size = getFileSize(file);
-        if (offset > file_size)
+        if (offset >= file_size)
             return ret;
         
         Ref<LOADED_DATA_BLOCK_DESCRIPTOR> desc = loadDataDescriptor(file.getPtr()->descriptor.first_data_block);
@@ -212,14 +224,57 @@ namespace nrcore {
         return ret;
     }
 
-    Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> IndexedDataStore::getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, int index) {
+    Memory IndexedDataStore::readOrSet(Memory key, Memory default_value) {
+        Ref<LOADED_FILE_DESCRIPTOR> file = getOrCreateFile(key, (int)default_value.length());
+        Memory ret = readFromFile(file, 0, default_value.length());
+        
+        if (ret.length() != default_value.length()) {
+            writeToFile(file, default_value, 0, (int)default_value.length());
+            return default_value;
+        }
+        return ret;
+    }
+
+    int IndexedDataStore::readOrSet(Memory key, int default_value) {
+        Memory res = readOrSet(key, Memory(&default_value, sizeof(int)));
+        int ret;
+        memcpy(&ret, res.operator char *(), sizeof(int));
+        return ret;
+    }
+
+    unsigned int IndexedDataStore::readOrSet(Memory key, unsigned int default_value) {
+        Memory res = readOrSet(key, Memory(&default_value, sizeof(int)));
+        unsigned int ret;
+        memcpy(&ret, res.operator char *(), sizeof(int));
+        return ret;
+    }
+
+    long long IndexedDataStore::readOrSet(Memory key, long long default_value) {
+        Memory res = readOrSet(key, Memory(&default_value, sizeof(long long)));
+        unsigned long long ret;
+        memcpy(&ret, res.operator char *(), sizeof(long long));
+        return ret;
+    }
+
+    unsigned long long IndexedDataStore::readOrSet(Memory key, unsigned long long default_value) {
+        Memory res = readOrSet(key, Memory(&default_value, sizeof(long long)));
+        unsigned long long ret;
+        memcpy(&ret, res.operator char *(), sizeof(long long));
+        return ret;
+    }
+
+    Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> IndexedDataStore::getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, int index, bool create_index) {
+        bool repeat;
+        
         do {
+            repeat = false;
+            
             if (descriptor.getPtr()->descriptor.range_start <= index && descriptor.getPtr()->descriptor.range_start+16 > index) {
                 unsigned long long offset = descriptor.getPtr()->descriptor.slot[index-descriptor.getPtr()->descriptor.range_start];
                 if ((offset & 0x8000000000000000) == 0x8000000000000000) {
                     // return existing descriptor
                     return loadIndexDescriptor(offset & 0x7FFFFFFFFFFFFFFF);
-                } else {
+                } else if (create_index) {
                     // Create new descriptor
                     INDEX_DESCRIPTOR ndesc;
                     memset(&ndesc, 0, sizeof(INDEX_DESCRIPTOR));
@@ -232,36 +287,34 @@ namespace nrcore {
                     updateIndexDescriptor(descriptor);
                     
                     return loadIndexDescriptor(offset & 0x7FFFFFFFFFFFFFFF);
+                } else {
+                    break;
                 }
+            } else if (create_index) {
+                // Create sibling descriptor
+                if (!descriptor.getPtr()->descriptor.next_index_descriptor) {
+                    unsigned int start_range = index-(index%16);
+                    
+                    INDEX_DESCRIPTOR ndesc;
+                    memset(&ndesc, 0, sizeof(INDEX_DESCRIPTOR));
+                    ndesc.magic_flag = MAGIC_FLAG_INDEX;
+                    ndesc.range_start = start_range;
+                    
+                    unsigned long long offset = file.length();
+                    file.write(offset, (const char*)&ndesc, sizeof(INDEX_DESCRIPTOR));
+                    
+                    descriptor.getPtr()->descriptor.next_index_descriptor = offset;
+                    updateIndexDescriptor(descriptor);
+                }
+                
             }
-        } while (descriptor.getPtr()->descriptor.next_index_descriptor);
-        
-        // child descriptor range does not exist, create
-        INDEX_DESCRIPTOR sibling_descriptor;
-        memset(&sibling_descriptor, 0, sizeof(INDEX_DESCRIPTOR));
-        sibling_descriptor.magic_flag = MAGIC_FLAG_INDEX;
-        sibling_descriptor.range_start = index-(16-(index%16));
-        
-        unsigned long long offset = file.length();
-        file.write(offset, (const char*)&sibling_descriptor, sizeof(INDEX_DESCRIPTOR));
-        
-        descriptor.getPtr()->descriptor.next_index_descriptor = offset;
-        updateIndexDescriptor(descriptor);
-        
-        descriptor = loadIndexDescriptor(offset);
-        if (descriptor.getPtr()) {
-            INDEX_DESCRIPTOR ndesc;
-            memset(&ndesc, 0, sizeof(INDEX_DESCRIPTOR));
-            ndesc.magic_flag = MAGIC_FLAG_INDEX;
             
-            unsigned long long offset = file.length();
-            file.write(offset, (const char*)&ndesc, sizeof(INDEX_DESCRIPTOR));
+            if (descriptor.getPtr()->descriptor.next_index_descriptor) {
+                descriptor = loadIndexDescriptor(descriptor.getPtr()->descriptor.next_index_descriptor);
+                repeat = true;
+            }
             
-            descriptor.getPtr()->descriptor.slot[index-descriptor.getPtr()->descriptor.range_start] = offset | 0x8000000000000000;
-            updateIndexDescriptor(descriptor);
-            
-            return loadIndexDescriptor(offset & 0x7FFFFFFFFFFFFFFF);
-        }
+        } while (repeat);
         
         return Ref<LOADED_INDEX_DESCRIPTOR>();
     }

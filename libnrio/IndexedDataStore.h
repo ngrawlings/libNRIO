@@ -69,14 +69,22 @@ namespace nrcore {
         Ref<LOADED_FILE_DESCRIPTOR> createFile(Memory key, unsigned int block_size);
         Ref<LOADED_FILE_DESCRIPTOR> getFile(Memory key);
         
+        Ref<LOADED_FILE_DESCRIPTOR> getOrCreateFile(Memory key, unsigned int block_size);
+        
         bool writeToFile(Ref<LOADED_FILE_DESCRIPTOR> file, Memory data, unsigned long long offset, unsigned long long length);
         unsigned long long getFileSize(Ref<LOADED_FILE_DESCRIPTOR> file);
         Memory readFromFile(Ref<LOADED_FILE_DESCRIPTOR> file, unsigned long long offset, unsigned long long length);
         
+        Memory readOrSet(Memory key, Memory default_value);
+        int readOrSet(Memory key, int default_value);
+        unsigned int readOrSet(Memory key, unsigned int default_value);
+        long long readOrSet(Memory key, long long default_value);
+        unsigned long long readOrSet(Memory key, unsigned long long default_value);
+        
     private:
         File file;
         
-        Ref<LOADED_INDEX_DESCRIPTOR> getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, int index);
+        Ref<LOADED_INDEX_DESCRIPTOR> getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, int index, bool create_index);
         Ref<LOADED_INDEX_DESCRIPTOR> loadIndexDescriptor(unsigned long long offset);
         void updateIndexDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor);
         
