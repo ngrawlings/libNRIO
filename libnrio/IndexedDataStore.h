@@ -15,9 +15,10 @@
 #include <libnrcore/memory/String.h>
 #include "File.h"
 
-#define MAGIC_FLAG_INDEX 0xAAAAAAAA
-#define MAGIC_FLAG_FILE 0xBBBBBBBB
-#define MAGIC_FLAG_DATA 0xCCCCCCCC
+#define MAGIC_FLAG_INDEX    0xAAAAAAAA
+#define MAGIC_FLAG_FILE     0xBBBBBBBB
+#define MAGIC_FLAG_DATA     0xCCCCCCCC
+#define MAGIC_FLAG_BANK_MAP 0xDDDDDDDD
 
 namespace nrcore {
 
@@ -26,10 +27,15 @@ namespace nrcore {
         typedef struct {
             unsigned long magic_flag;
             unsigned char range_start;      // Start of first 16 entries
-            unsigned long long next_index_descriptor;
+            unsigned long long next_index_descriptor; // if the most significant bit is a 1, this is a bank map, not a chained list
             unsigned long long file;        // File which holds data block for recycling
             unsigned long long slot[16];    // Most significant bit indicates if in use or not
         } INDEX_DESCRIPTOR;
+
+        typedef struct {                    // if wwas found that searching banks became a major bottleneck for massive datasets
+            unsigned long magic_flag;
+            unsigned long long banks[16];
+        } BANK_MAP;
         
         typedef struct {
             unsigned long long offset;
@@ -75,6 +81,16 @@ namespace nrcore {
         unsigned long long getFileSize(Ref<LOADED_FILE_DESCRIPTOR> file);
         Memory readFromFile(Ref<LOADED_FILE_DESCRIPTOR> file, unsigned long long offset, unsigned long long length);
         
+        void set(Memory key, Memory value);
+        void set(Memory key, int value);
+        void set(Memory key, unsigned int value);
+        void set(Memory key, long long value);
+        void set(Memory key, unsigned long long value);
+        
+        Memory read(Memory key, unsigned int length);
+        int readInt(Memory key);
+        long long readLongLong(Memory key);
+        
         Memory readOrSet(Memory key, Memory default_value);
         int readOrSet(Memory key, int default_value);
         unsigned int readOrSet(Memory key, unsigned int default_value);
@@ -84,9 +100,12 @@ namespace nrcore {
     private:
         File file;
         
-        Ref<LOADED_INDEX_DESCRIPTOR> getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, int index, bool create_index);
+        Ref<LOADED_INDEX_DESCRIPTOR> getChildDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor, unsigned char index, bool create_index);
         Ref<LOADED_INDEX_DESCRIPTOR> loadIndexDescriptor(unsigned long long offset);
         void updateIndexDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor);
+
+        Ref<BANK_MAP> loadBankMap(unsigned long long offset);
+        bool convertDescriptorListToBankMap(Ref<LOADED_INDEX_DESCRIPTOR> descriptor);
         
         Ref<LOADED_FILE_DESCRIPTOR> loadFileDescriptor(unsigned long long offset);
         void updateFileDescriptor(Ref<LOADED_FILE_DESCRIPTOR> descriptor);

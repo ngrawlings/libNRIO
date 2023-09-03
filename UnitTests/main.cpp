@@ -16,8 +16,8 @@ using namespace nrcore;
 int main(int argc, const char * argv[]) {
     IndexedDataStore *data = new IndexedDataStore("./index_data_Store_test.dat");
     
-    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> file1 = data->getFile(Memory(ByteArray::fromHex("0102"), 2));
-    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> file2 = data->getFile(Memory(ByteArray::fromHex("010203"), 3));
+    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> file1 = data->getOrCreateFile(Memory(ByteArray::fromHex("0102"), 2), 16);
+    Ref<IndexedDataStore::LOADED_FILE_DESCRIPTOR> file2 = data->getOrCreateFile(Memory(ByteArray::fromHex("010203"), 3), 16);
     
     if (!file1.getPtr())
         file1 = data->createFile(Memory(ByteArray::fromHex("0102"), 2), 32);
