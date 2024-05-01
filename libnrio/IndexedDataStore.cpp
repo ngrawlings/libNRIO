@@ -8,6 +8,7 @@
 
 #include "IndexedDataStore.h"
 
+#include <libnrcore/memory/Array.h>
 #include <libnrcore/memory/ByteArray.h>
 
 namespace nrcore {
@@ -116,7 +117,8 @@ namespace nrcore {
             this->file.write(file_offset+sizeof(DATA_BLOCK_DESCRIPTOR), mem.operator char *(), file.getPtr()->descriptor.block_size);
             
             file.getPtr()->descriptor.first_data_block = file_offset;
-            //updateFileDescriptor(file); // Seems to be overwritten past the point of its end
+            file.getPtr()->descriptor.last_data_block = file_offset;
+            //updateFileDescriptor(file);
         }
         
         Ref<LOADED_DATA_BLOCK_DESCRIPTOR> desc = loadDataDescriptor(file.getPtr()->descriptor.first_data_block);
@@ -125,13 +127,23 @@ namespace nrcore {
         unsigned long long written = 0;
 
         // Get block where offset resides
-        while(desc.getPtr() && desc.getPtr()->descriptor.used_bytes == desc.getPtr()->descriptor.block_size && (desc.getPtr()->descriptor.used_bytes+block_offset) <= offset) {
-            if (desc.getPtr()->descriptor.next_data_block) {
-                desc = loadDataDescriptor(desc.getPtr()->descriptor.next_data_block);
-                block_offset += desc.getPtr()->descriptor.block_size;
-            } else {
-                desc = createDataBlock(desc, file.getPtr()->descriptor.block_size);
-                block_offset += file.getPtr()->descriptor.block_size;
+        // This causes a major slow down when there are thousands of blocks
+        // Most of the time we are just appending data, though an index in a later version would be good. Just jumping to the last block will work for appending.
+        if (offset == file_size && file_size%file.getPtr()->descriptor.block_size == 0) {
+            // This optimisation will only work when appending whole blocks
+            block_offset = offset;
+            desc = loadDataDescriptor(file.getPtr()->descriptor.last_data_block);
+            if (offset)
+                desc = createDataBlock(file, desc);
+        } else {
+            while(desc.getPtr() && desc.getPtr()->descriptor.used_bytes == desc.getPtr()->descriptor.block_size && (desc.getPtr()->descriptor.used_bytes+block_offset) <= offset) {
+                if (desc.getPtr()->descriptor.next_data_block) {
+                    desc = loadDataDescriptor(desc.getPtr()->descriptor.next_data_block);
+                    block_offset += desc.getPtr()->descriptor.block_size;
+                } else {
+                    desc = createDataBlock(file, desc);
+                    block_offset += file.getPtr()->descriptor.block_size;
+                }
             }
         }
             
@@ -164,7 +176,7 @@ namespace nrcore {
                 if (desc.getPtr()->descriptor.next_data_block) {
                     desc = loadDataDescriptor(desc.getPtr()->descriptor.next_data_block);
                 } else {
-                    desc = createDataBlock(desc, file.getPtr()->descriptor.block_size);
+                    desc = createDataBlock(file, desc);
                 }
             }
             cursor = 0;
@@ -308,19 +320,20 @@ namespace nrcore {
         do {
             repeat = false;
 
-            if (descriptor.getPtr()->descriptor.next_index_descriptor && 0x8000000000000000) {
+            if (descriptor.getPtr()->descriptor.next_index_descriptor & 0x8000000000000000) {
                 // This is a bank map, select correct node directly
-                Ref<BANK_MAP> bmap = loadBankMap(descriptor.getPtr()->descriptor.next_index_descriptor & 0x7FFFFFFFFFFFFFFF);
+                printf("Bank map mode\n");
+                Ref<LOADED_BANK_MAP> bmap = loadBankMap(descriptor.getPtr()->descriptor.next_index_descriptor & 0x7FFFFFFFFFFFFFFF);
 
-                unsigned long long slot = index/16;
+                unsigned long long slot = index/BANK_SIZE;
 
-                if (bmap.getPtr()->banks[slot]) {
-                    descriptor = loadIndexDescriptor(bmap.getPtr()->banks[slot]);
+                if (bmap.getPtr()->descriptor.banks[slot]) {
+                    descriptor = loadIndexDescriptor(bmap.getPtr()->descriptor.banks[slot]);
                 } else 
                     return Ref<LOADED_INDEX_DESCRIPTOR>();
             }
             
-            if (descriptor.getPtr()->descriptor.range_start <= index && descriptor.getPtr()->descriptor.range_start+16 > index) {
+            if (descriptor.getPtr()->descriptor.range_start <= index && descriptor.getPtr()->descriptor.range_start+BANK_SIZE > index) {
                 unsigned long long offset = descriptor.getPtr()->descriptor.slot[index-descriptor.getPtr()->descriptor.range_start];
                 if ((offset & 0x8000000000000000) == 0x8000000000000000) {
                     // return existing descriptor
@@ -344,7 +357,7 @@ namespace nrcore {
             } else if (create_index) {
                 // Create sibling descriptor
                 if (!descriptor.getPtr()->descriptor.next_index_descriptor) {
-                    unsigned int start_range = index-(index%16);
+                    unsigned int start_range = index-(index%BANK_SIZE);
                     
                     INDEX_DESCRIPTOR ndesc;
                     memset(&ndesc, 0, sizeof(INDEX_DESCRIPTOR));
@@ -360,7 +373,7 @@ namespace nrcore {
                 
             }
 
-            if (descriptor.getPtr()->descriptor.next_index_descriptor && 0x8000000000000000)
+            if (descriptor.getPtr()->descriptor.next_index_descriptor & 0x8000000000000000)
                 throw "Bank map, should never reach this code";
             
             if (descriptor.getPtr()->descriptor.next_index_descriptor) {
@@ -387,20 +400,29 @@ namespace nrcore {
         return Ref<LOADED_INDEX_DESCRIPTOR>(desc);
     }
 
-    Ref<IndexedDataStore::BANK_MAP> IndexedDataStore::loadBankMap(unsigned long long offset) {
+    Ref<IndexedDataStore::LOADED_BANK_MAP> IndexedDataStore::loadBankMap(unsigned long long offset) {
         Memory mem = file.read(offset, sizeof(BANK_MAP));
 
-        BANK_MAP *bmap = new BANK_MAP;
-        memcpy(bmap, mem.operator char *(), sizeof(BANK_MAP));
+        LOADED_BANK_MAP *bmap = new LOADED_BANK_MAP;
+        memcpy(&bmap->descriptor, mem.operator char *(), sizeof(BANK_MAP));
+        bmap->offset = offset;
 
-        if (bmap->magic_flag != MAGIC_FLAG_BANK_MAP)
+        if (bmap->descriptor.magic_flag != MAGIC_FLAG_BANK_MAP)
             throw "Invalid bank map";
 
-        return Ref<BANK_MAP>(bmap);
+        return Ref<LOADED_BANK_MAP>(bmap);
     }
 
-    bool IndexedDataStore::convertDescriptorListToBankMap(Ref<LOADED_INDEX_DESCRIPTOR> descriptor) {
-        if (descriptor.getPtr()->descriptor.range_start == 0) { // We will only convert a descriptor list to a bank map if we have a lowest possible descriptor
+    bool IndexedDataStore::convertDescriptorListToBankMap(Memory key) {
+        Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> desc = getUserDecriptor();
+        
+        for (int i=0; i<key.length(); i++) {
+            desc = getChildDescriptor(desc, (unsigned char)(key.getPtr()[i]&0xFF), false);
+            if (!desc.getPtr())
+                throw "Failed to get file key";
+        }
+
+        if (desc.getPtr()->descriptor.range_start == 0) { // We will only convert a descriptor list to a bank map if we have a lowest possible descriptor
             Memory mem(sizeof(BANK_MAP));
             BANK_MAP *bmap = (BANK_MAP*)mem.operator char *();
             memset(&bmap, 0, sizeof(BANK_MAP));
@@ -410,22 +432,24 @@ namespace nrcore {
 
             unsigned long long file_offset = file.length();
 
-            descriptor.getPtr()->descriptor.next_index_descriptor = file_offset | 0x8000000000000000;
-            updateIndexDescriptor(descriptor);
+            if (!(desc.getPtr()->descriptor.next_index_descriptor && 0x8000000000000000)) {
+                desc.getPtr()->descriptor.next_index_descriptor = file_offset | 0x8000000000000000;
+                updateIndexDescriptor(desc);
 
-            bmap->banks[0] = descriptor.getPtr()->offset;
-            while (descriptor.getPtr()->descriptor.next_index_descriptor) {
-                next = loadIndexDescriptor(descriptor.getPtr()->descriptor.next_index_descriptor);
-                int bank_slot = next.getPtr()->descriptor.range_start/16;
-                bmap->banks[bank_slot] = next.getPtr()->offset;
+                bmap->banks[0] = desc.getPtr()->offset;
+                while (desc.getPtr()->descriptor.next_index_descriptor) {
+                    next = loadIndexDescriptor(desc.getPtr()->descriptor.next_index_descriptor);
+                    int bank_slot = next.getPtr()->descriptor.range_start/BANK_SIZE;
+                    bmap->banks[bank_slot] = next.getPtr()->offset;
 
-                next.getPtr()->descriptor.next_index_descriptor = file_offset | 0x8000000000000000;
-                updateIndexDescriptor(next);
+                    next.getPtr()->descriptor.next_index_descriptor = file_offset | 0x8000000000000000;
+                    updateIndexDescriptor(next);
+                }
+
+                this->file.write(file_offset, mem.operator char *(), sizeof(BANK_MAP));
+
+                return true;
             }
-
-            this->file.write(file_offset, mem.operator char *(), sizeof(BANK_MAP));
-
-            return true;
         }
 
         return false;
@@ -464,23 +488,25 @@ namespace nrcore {
         file.write(descriptor.getPtr()->offset, (const char*)&descriptor.getPtr()->descriptor, sizeof(INDEX_DESCRIPTOR));
     }
 
-    Ref<IndexedDataStore::LOADED_DATA_BLOCK_DESCRIPTOR> IndexedDataStore::createDataBlock(Ref<LOADED_DATA_BLOCK_DESCRIPTOR> previous, unsigned int block_size) {
+    Ref<IndexedDataStore::LOADED_DATA_BLOCK_DESCRIPTOR> IndexedDataStore::createDataBlock(Ref<LOADED_FILE_DESCRIPTOR> file_desc, Ref<LOADED_DATA_BLOCK_DESCRIPTOR> previous) {
         DATA_BLOCK_DESCRIPTOR desc;
         memset(&desc, 0, sizeof(DATA_BLOCK_DESCRIPTOR));
         desc.magic_flag = MAGIC_FLAG_DATA;
-        desc.block_size = block_size;
+        desc.block_size = file_desc.getPtr()->descriptor.block_size;
         
         unsigned long long file_offset = file.length();
         file.write(file_offset, (const char*)&desc, sizeof(DATA_BLOCK_DESCRIPTOR));
         
-        Memory mem(block_size);
-        for (int i=0; i<block_size; i++) {
+        Memory mem(desc.block_size);
+        for (int i=0; i<desc.block_size; i++) {
             mem.getPtr()[i] = 0;
         }
-        this->file.write(file_offset+sizeof(DATA_BLOCK_DESCRIPTOR), mem.operator char *(), block_size);
+        this->file.write(file_offset+sizeof(DATA_BLOCK_DESCRIPTOR), mem.operator char *(), desc.block_size);
         
         previous.getPtr()->descriptor.next_data_block = file_offset;
+        file_desc.getPtr()->descriptor.last_data_block = file_offset;
         updateDataBlockDescriptor(previous);
+        updateFileDescriptor(file_desc);
         
         return loadDataDescriptor(file_offset);
     }
@@ -512,6 +538,37 @@ namespace nrcore {
     Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> IndexedDataStore::getUserDecriptor() {
         Ref<LOADED_INDEX_DESCRIPTOR> root = getRootDecriptor();
         return loadIndexDescriptor(root.getPtr()->descriptor.slot[1]);
+    }
+
+    RefArray<int> IndexedDataStore::getChildIndexes(Memory key) {
+        Ref<IndexedDataStore::LOADED_INDEX_DESCRIPTOR> desc = getUserDecriptor();
+        for (int i=0; i<key.length(); i++) {
+            desc = getChildDescriptor(desc, (unsigned char)(key.getPtr()[i]&0xFF), false);
+            if (!desc.getPtr())
+                throw "Failed to get file key";
+        }
+
+        Array<int> list;
+
+        while (true) {
+            for (int i=0; i<16; i++) {
+                if (desc.getPtr()->descriptor.slot[i] & 0x8000000000000000) 
+                    list.push(i);
+
+                if (desc.getPtr()->descriptor.next_index_descriptor)
+                    desc = loadIndexDescriptor(desc.getPtr()->descriptor.next_index_descriptor);
+                else 
+                    break;
+            }
+        }
+
+        int len = list.length();
+        int *ret = new int[len];
+        for (int i=0; i<len; i++) {
+            ret[i] = list.get(i);
+        }
+
+        return RefArray(ret);
     }
 
 }

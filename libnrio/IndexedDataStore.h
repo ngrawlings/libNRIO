@@ -20,6 +20,8 @@
 #define MAGIC_FLAG_DATA     0xCCCCCCCC
 #define MAGIC_FLAG_BANK_MAP 0xDDDDDDDD
 
+#define BANK_SIZE 16
+
 namespace nrcore {
 
     class IndexedDataStore {
@@ -29,12 +31,12 @@ namespace nrcore {
             unsigned char range_start;      // Start of first 16 entries
             unsigned long long next_index_descriptor; // if the most significant bit is a 1, this is a bank map, not a chained list
             unsigned long long file;        // File which holds data block for recycling
-            unsigned long long slot[16];    // Most significant bit indicates if in use or not
+            unsigned long long slot[BANK_SIZE];    // Most significant bit indicates if in use or not
         } INDEX_DESCRIPTOR;
 
-        typedef struct {                    // if wwas found that searching banks became a major bottleneck for massive datasets
+        typedef struct {
             unsigned long magic_flag;
-            unsigned long long banks[16];
+            unsigned long long banks[256/BANK_SIZE];
         } BANK_MAP;
         
         typedef struct {
@@ -67,6 +69,16 @@ namespace nrcore {
             DATA_BLOCK_DESCRIPTOR descriptor;
             Memory data;
         } LOADED_DATA_BLOCK_DESCRIPTOR;
+
+        typedef struct {
+            unsigned long long offset;
+            BANK_MAP descriptor;
+        } LOADED_BANK_MAP;
+
+        typedef struct {
+            Memory key;
+            Ref<LOADED_INDEX_DESCRIPTOR> desc;
+        } ITERATION_DESC;
         
     public:
         IndexedDataStore(String path);
@@ -96,7 +108,11 @@ namespace nrcore {
         unsigned int readOrSet(Memory key, unsigned int default_value);
         long long readOrSet(Memory key, long long default_value);
         unsigned long long readOrSet(Memory key, unsigned long long default_value);
-        
+
+        bool convertDescriptorListToBankMap(Memory key); // Needs to be debuged, works but not time proven
+
+        RefArray<int> getChildIndexes(Memory key);
+
     private:
         File file;
         
@@ -104,15 +120,14 @@ namespace nrcore {
         Ref<LOADED_INDEX_DESCRIPTOR> loadIndexDescriptor(unsigned long long offset);
         void updateIndexDescriptor(Ref<LOADED_INDEX_DESCRIPTOR> descriptor);
 
-        Ref<BANK_MAP> loadBankMap(unsigned long long offset);
-        bool convertDescriptorListToBankMap(Ref<LOADED_INDEX_DESCRIPTOR> descriptor);
+        Ref<LOADED_BANK_MAP> loadBankMap(unsigned long long offset);
         
         Ref<LOADED_FILE_DESCRIPTOR> loadFileDescriptor(unsigned long long offset);
         void updateFileDescriptor(Ref<LOADED_FILE_DESCRIPTOR> descriptor);
         
         Ref<LOADED_DATA_BLOCK_DESCRIPTOR> loadDataDescriptor(unsigned long long offset);
         
-        Ref<LOADED_DATA_BLOCK_DESCRIPTOR> createDataBlock(Ref<LOADED_DATA_BLOCK_DESCRIPTOR> previous, unsigned int block_size);
+        Ref<LOADED_DATA_BLOCK_DESCRIPTOR> createDataBlock(Ref<LOADED_FILE_DESCRIPTOR> file, Ref<LOADED_DATA_BLOCK_DESCRIPTOR> previous);
         void updateDataBlockDescriptor(Ref<LOADED_DATA_BLOCK_DESCRIPTOR> descriptor);
         
         void updateDataBlockData(Ref<LOADED_DATA_BLOCK_DESCRIPTOR> descriptor);
@@ -120,6 +135,7 @@ namespace nrcore {
         Ref<LOADED_INDEX_DESCRIPTOR> getRootDecriptor();
         Ref<LOADED_INDEX_DESCRIPTOR> getSystemDecriptor();
         Ref<LOADED_INDEX_DESCRIPTOR> getUserDecriptor();
+
     };
 
 }
